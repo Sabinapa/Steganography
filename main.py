@@ -1,5 +1,6 @@
 from PIL import Image
 import numpy as np
+import random
 
 #1. STEP
 """Convert the message to binary and prepend its length."""
@@ -62,14 +63,52 @@ def quantize_and_zero_out(coefficients, n):
     quantized[-n:] = 0  # Set the last N coefficients to 0
     return quantized
 
+#6. STEP
+def f5_algorithm_random(coefficients, message_bits):
+    # Ensure coefficients are integers
+    coefficients = coefficients.astype(int)
+
+    message_index = 0
+    indices = list(range(4, 32))  # Valid indices for middle frequencies
+    random.shuffle(indices)  # Shuffle for random selection
+
+    for i in range(0, len(indices) - 2, 3):  # Process indices in triplets
+        if message_index >= len(message_bits):
+            break
+
+        # Get triplet indices
+        idx1, idx2, idx3 = indices[i], indices[i + 1], indices[i + 2]
+
+        # Extract LSBs of the triplet
+        C1 = coefficients[idx1] & 1
+        C2 = coefficients[idx2] & 1
+        C3 = coefficients[idx3] & 1
+
+        # Get two bits from the message
+        x1 = int(message_bits[message_index])
+        x2 = int(message_bits[message_index + 1])
+        message_index += 2
+
+        # Modify the triplet based on the F5 rules
+        if x1 == (C1 ^ C2) and x2 == (C2 ^ C3):
+            continue
+        elif x1 != (C1 ^ C2) and x2 == (C2 ^ C3):
+            coefficients[idx1] ^= 1  # Flip LSB of the first coefficient
+        elif x1 == (C1 ^ C2) and x2 != (C2 ^ C3):
+            coefficients[idx3] ^= 1  # Flip LSB of the third coefficient
+        elif x1 != (C1 ^ C2) and x2 != (C2 ^ C3):
+            coefficients[idx2] ^= 1  # Flip LSB of the second coefficient
+
+    return coefficients
+
+#7. STEP
 
 
-"""
 # Example message
 message = "Hello"
 binary_message = binarize_message(message)
 print(f"Binarized message: {binary_message}")
-"""
+
 
 image_path = "slike BMP/Baboon.bmp"
 
@@ -88,3 +127,7 @@ print(f"Zigzag serialized coefficients:\n{zigzag_serialized}")
 N = 10
 quantized_coefficients = quantize_and_zero_out(zigzag_serialized, N)
 print(f"Quantized coefficients with last {N} set to 0:\n{quantized_coefficients}")
+
+modified_coefficients_random = f5_algorithm_random(quantized_coefficients, binary_message)
+
+print(f"Modified coefficients with random triplets:\n{modified_coefficients_random}")
