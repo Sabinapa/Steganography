@@ -55,6 +55,15 @@ def zigzag(block):
             result.extend(arr)
     return np.array(result)
 
+#5. STEP
+"""Quantize coefficients and set the last N to 0."""
+def quantize_and_zero_out(coefficients, n):
+    quantized = np.round(coefficients)  # Quantize coefficients to integers
+    quantized[-n:] = 0  # Set the last N coefficients to 0
+    return quantized
+
+
+
 """
 # Example message
 message = "Hello"
@@ -75,3 +84,7 @@ print(f"Haar transformed block:\n{haar_transformed}")
 
 zigzag_serialized = zigzag(haar_transformed)
 print(f"Zigzag serialized coefficients:\n{zigzag_serialized}")
+
+N = 10
+quantized_coefficients = quantize_and_zero_out(zigzag_serialized, N)
+print(f"Quantized coefficients with last {N} set to 0:\n{quantized_coefficients}")
