@@ -1,16 +1,16 @@
-# This is a sample Python script.
+from PIL import Image
+import numpy as np
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+#1. STEP
+def binarize_message(message):
+    """Convert the message to binary and prepend its length."""
+    binary_message = ''.join(format(ord(char), '08b') for char in message)  # Convert to binary
+    size = len(binary_message)  # Length of binary message
+    size_binary = f'{size:032b}'  # Convert length to 32-bit binary
+    return size_binary + binary_message
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# Example message
+message = "Hello"
+binary_message = binarize_message(message)
+print(f"Binarized message: {binary_message}")
