@@ -25,7 +25,7 @@ def split_into_blocks(image_path):
     ]
     return blocks, height, width #bloks first blokc, image demensions hegiht, number of 8x8 bloks len(blocks)
 
-#3 STEP
+#3. STEP
 """Apply Haar transform to an 8x8 block."""
 def haar_transform(block):
     transformed = np.zeros_like(block, dtype=float)
@@ -39,7 +39,21 @@ def haar_transform(block):
         n = half
     return transformed
 
-
+#4. STEP
+"""Perform zigzag serialization of an 8x8 block."""
+def zigzag(block):
+    rows, cols = block.shape
+    solution = [[] for _ in range(rows + cols - 1)]
+    for i in range(rows):
+        for j in range(cols):
+            solution[i + j].append(block[i][j])
+    result = []
+    for index, arr in enumerate(solution):
+        if index % 2 == 0:
+            result.extend(arr[::-1])  # Reverse for zigzag order
+        else:
+            result.extend(arr)
+    return np.array(result)
 
 """
 # Example message
@@ -58,3 +72,6 @@ print(f"First block:\n{blocks[0]}")
 first_block = blocks[0]
 haar_transformed = haar_transform(first_block)
 print(f"Haar transformed block:\n{haar_transformed}")
+
+zigzag_serialized = zigzag(haar_transformed)
+print(f"Zigzag serialized coefficients:\n{zigzag_serialized}")
